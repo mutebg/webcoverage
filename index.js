@@ -1,13 +1,24 @@
 const puppeteer = require("puppeteer");
+const path = require("path");
+const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const helpers = require("./helpers");
+const { format, getViewport } = helpers;
 
-const pages = [
-  "https://www.bggumi.com/",
-  "https://www.bggumi.com/eshop/productinfo/1/325010220342030/"
-];
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true, limit: "1mb" }));
+app.use(bodyParser.json({ limit: "1mb" }));
+const staticPath = path.join(__dirname, "./static");
+app.use(express.static(staticPath));
 
-const screenSizes = [[1280, 960], [375, 667]];
+const defaultViewport = [1280, 960];
 
-(async () => {
+app.post("/api", async (req, res) => {
+  const viewports = req.body.viewports.map(getViewport) || [defaultViewport];
+  const pages = req.body.pages.split("\n");
+
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const covarageOptions = {
@@ -19,9 +30,9 @@ const screenSizes = [[1280, 960], [375, 667]];
     page.coverage.startCSSCoverage(covarageOptions)
   ]);
 
-  // Navigate to page
-  for (let screenSize of screenSizes) {
-    const [width, height] = screenSize;
+  // Navigate to pages
+  for (let viewport of viewports) {
+    const { width, height } = viewport;
     for (let url of pages) {
       await page.setViewport({ width, height });
       await page.goto(url);
@@ -42,28 +53,15 @@ const screenSizes = [[1280, 960], [375, 667]];
     ...cssCoverage.map(formatCSS)
   ].sort((a, b) => b.unusedPercent - b.unusedPercent);
 
+  res.json(coverage);
   await browser.close();
-})();
+});
 
-const sumRangeUsage = ranges => {
-  return ranges.reduce((total, range) => {
-    return total + range.end - range.start - 1;
-  }, 0);
-};
+app.get("/", (req, res) => {
+  res.sendFile("index.html");
+});
 
-const format = type => ({ ranges, start, end, url, text }) => {
-  const totalBytes = text.length;
-  const usedBytesTotal = sumRangeUsage(ranges);
-  const unusedBytesTotal = totalBytes - usedBytesTotal;
-  const unusedPercent = totalBytes ? (unusedBytesTotal * 100) / totalBytes : 0;
-  const usedPercent = 100 - unusedPercent;
-  return {
-    type,
-    url,
-    totalBytes,
-    usedBytesTotal,
-    unusedBytesTotal,
-    usedPercent,
-    unusedPercent
-  };
-};
+const port = process.env.NODE_PORT || 3000;
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}!`);
+});

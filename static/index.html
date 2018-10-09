@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebCoverage.app</title>
+</head>
+
+<body>
+    <h1>WebCoverage.app</h1>
+    <p>Find out the amount of unused CSS & JSS on your page</p>
+    <form>
+        <div class="viewports">
+
+        </div>
+        <textarea name="pages">http://bggumi.com</textarea>
+        <button>Send</button>
+    </form>
+    <div class="result"></div>
+</body>
+<script>
+    const viewports = ['375x667', '768x1024', '1280x960', '1440x900'];
+    const viewportEl = document.querySelector('.viewports');
+    const fragment = document.createDocumentFragment();
+
+    viewports.forEach(function (vp) {
+        let div = document.createElement('div');
+        let label = document.createElement('label');
+        let input = document.createElement('input');
+        label.setAttribute('for', 'vp' + vp);
+        input.setAttribute('type', 'checkbox');
+        input.setAttribute('id', 'vp' + vp);
+        input.setAttribute('value', vp);
+        label.textContent = vp;
+        div.appendChild(label);
+        div.appendChild(input);
+        fragment.appendChild(div);
+    });
+    viewportEl.appendChild(fragment);
+
+
+    const formEl = document.querySelector('form');
+    formEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const viewports = Array.from(viewportEl.querySelectorAll('input')).filter(input =>
+            input.checked
+        ).map(input => {
+            return input.value
+        });
+        console.log({ viewports });
+        const data = {
+            pages: document.querySelector('textarea').value,
+            viewports,
+        }
+
+        fetch('/api', {
+            method: 'POST',
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json()).then(result => {
+            const keys = ['url', 'type', 'totalBytes']
+            const fragment = document.createDocumentFragment();
+
+            const createTd = (value = '', attributes = {}) => {
+                let td = document.createElement('td');
+                td.textContent = value;
+                Object.entries(attributes).forEach(([key, value]) => {
+                    td.setAttribute(key, value);
+                });
+                return td;
+            }
+
+            result.forEach(function (item) {
+                let tr = document.createElement('tr');
+                keys.forEach(key => {
+                    tr.appendChild(createTd(item[key], { 'class': key }))
+                });
+                tr.appendChild(createTd(`${item.unusedBytesTotal} ( ${item.unusedPercent}% )`))
+                fragment.appendChild(tr);
+            });
+            const resultEl = document.querySelector('.result');
+            resultEl.appendChild(fragment);
+
+
+        }).catch(e => {
+        })
+
+    })
+
+</script>
+
+</html>
