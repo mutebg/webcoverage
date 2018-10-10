@@ -132,7 +132,7 @@
         footer {
             text-align: center;
             height: 40px;
-            background: #000;
+            background: #3e3e3e;
             color: #fff;
             display: flex;
             justify-content: center;
@@ -170,7 +170,8 @@
                         <label for="vp1440x900">1440x900</label>
                     </div>
                 </fieldset>
-                <textarea name="pages" placeholder="Enter URLs">http://bggumi.com</textarea>
+                <label>Enter URLs</label>
+                <textarea name="pages" placeholder="Each URL on new line"></textarea>
                 <button>Send</button>
             </form>
         </div>
@@ -287,8 +288,12 @@
             }
             resultEl.appendChild(fragment);
         }).catch(e => {
-            console.log('error', e);
-        })
+            const error = createElement('div', 'error');
+            error.innerHTML = e;
+            resultEl.appendChild(error);
+            button.removeAttribute('disabled');
+            console.log('UI is too simple to handle errors', e);
+        });
 
     })
 
