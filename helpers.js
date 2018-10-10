@@ -4,6 +4,19 @@ const sumRangeUsage = ranges => {
   }, 0);
 };
 
+const mergeRanges = coverage => {
+  const merged = coverage.reduce((obj, cover) => {
+    if (obj[cover.url]) {
+      obj[cover.url].ranges = [...obj[cover.url].ranges, ...cover.ranges];
+    } else {
+      obj[cover.url] = cover;
+    }
+    return obj;
+  }, {});
+
+  return Object.values(merged);
+};
+
 const format = type => ({ ranges, start, end, url, text }) => {
   const totalBytes = text.length;
   const usedBytesTotal = sumRangeUsage(ranges);
@@ -16,8 +29,8 @@ const format = type => ({ ranges, start, end, url, text }) => {
     totalBytes,
     usedBytesTotal,
     unusedBytesTotal,
-    usedPercent,
-    unusedPercent
+    usedPercent: usedPercent.toFixed(2),
+    unusedPercent: unusedPercent.toFixed(2)
   };
 };
 
@@ -32,5 +45,6 @@ const getViewport = vp => {
 module.exports = {
   format,
   sumRangeUsage,
-  getViewport
+  getViewport,
+  mergeRanges
 };

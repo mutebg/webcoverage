@@ -6,52 +6,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>WebCoverage.app</title>
+    <style>
+        *,
+        *:before,
+        *:after {
+            box-sizing: border-box;
+        }
+
+        body {
+            color: #3e3e3e;
+            font-family: Roboto, Ubuntu, 'Open Sans', sans-serif;
+            margin: 0;
+        }
+
+        main {
+            min-height: calc(100vh - 40px);
+        }
+
+        .intro {
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 10vh;
+        }
+
+        .intro h1 {
+            font-size: 3em;
+        }
+
+        .intro textarea {
+            width: 100%;
+            padding: 1em;
+            font-size: 16px;
+            height: 6.8em;
+            line-height: 1.4;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+
+        .intro button {
+            padding: 0.5em 3em;
+            border-radius: 3px;
+            font-size: 18px;
+        }
+
+        .intro button:disabled {
+            opacity: 0.5;
+        }
+
+        .viewports {
+            margin: 0 0 1em 0;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        .viewports div {
+            display: inline-block;
+            margin: 0 0.5em;
+        }
+
+        .data-grid {
+            border-top: 1px solid #aaa;
+            border-left: 1px solid #aaa;
+            width: calc(100% - 2em);
+            margin: 2em 1em 1em 1em;
+            table-layout: fixed;
+            border-spacing: 0;
+            border-collapse: separate;
+            height: 100%;
+            font-size: 14px;
+        }
+
+        .data-grid:empty {
+            display: none;
+        }
+
+        .data-grid td,
+        .data-grid th {
+            border-bottom: 1px solid #aaa;
+            border-right: 1px solid #aaa;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            line-height: 18px;
+            height: 18px;
+            padding: 1px 4px;
+        }
+
+        .data-grid th {
+            background: #aaa;
+        }
+
+        .data-grid td.totalBytes,
+        .data-grid td.unusedBytesTotal {
+            text-align: right;
+        }
+
+        .data-grid td.url {
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .data-grid td .bar {
+            display: inline-block;
+            height: 8px;
+        }
+
+        .data-grid td .bar-container {}
+
+        .data-grid td .bar-unused-size {
+            background-color: #E57373;
+        }
+
+        .data-grid td .bar-used-size {
+            background-color: #81C784;
+        }
+
+        .data-grid td .percent-value {
+            color: #888;
+            width: 60px;
+            display: inline-block;
+        }
+
+        footer {
+            text-align: center;
+            height: 40px;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        footer a {
+            color: inherit;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>WebCoverage.app</h1>
-    <p>Find out the amount of unused CSS & JSS on your page</p>
-    <form>
-        <div class="viewports">
-
+    <main>
+        <div class="intro">
+            <h1>WebCoverage.app</h1>
+            <p>Find the amount of unused CSS & JSS on your page</p>
+            <form>
+                <fieldset class="viewports">
+                    <legend>Select viewport:</legend>
+                    <div>
+                        <input type="checkbox" id="vp375x667" value="375x667">
+                        <label for="vp375x667">375x667</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="vp768x1024" value="768x1024">
+                        <label for="vp768x1024">768x1024</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="vp1280x960" checked value="1280x960">
+                        <label for="vp1280x960">1280x960</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="vp1440x900" value="1440x900">
+                        <label for="vp1440x900">1440x900</label>
+                    </div>
+                </fieldset>
+                <textarea name="pages" placeholder="Enter URLs">http://bggumi.com</textarea>
+                <button>Send</button>
+            </form>
         </div>
-        <textarea name="pages">http://bggumi.com</textarea>
-        <button>Send</button>
-    </form>
-    <div class="result"></div>
+        <table class="data-grid"></table>
+    </main>
+    <footer>
+        <p>
+            Created by <a href="https://twitter.com/mutebg">@mutebg</a> |
+            <a href="https://github.com/mutebg/puppe-coverage">Star on github</a>
+        </p>
+    </footer>
 </body>
 <script>
-    const viewports = ['375x667', '768x1024', '1280x960', '1440x900'];
-    const viewportEl = document.querySelector('.viewports');
-    const fragment = document.createDocumentFragment();
-
-    viewports.forEach(function (vp) {
-        let div = document.createElement('div');
-        let label = document.createElement('label');
-        let input = document.createElement('input');
-        label.setAttribute('for', 'vp' + vp);
-        input.setAttribute('type', 'checkbox');
-        input.setAttribute('id', 'vp' + vp);
-        input.setAttribute('value', vp);
-        label.textContent = vp;
-        div.appendChild(label);
-        div.appendChild(input);
-        fragment.appendChild(div);
-    });
-    viewportEl.appendChild(fragment);
-
-
     const formEl = document.querySelector('form');
+    const resultEl = document.querySelector('.data-grid');
+    const viewportInputs = document.querySelectorAll('input');
+    const urlInput = document.querySelector('textarea');
+    const button = document.querySelector('button');
+
     formEl.addEventListener('submit', (e) => {
         e.preventDefault();
-        const viewports = Array.from(viewportEl.querySelectorAll('input')).filter(input =>
+
+        button.setAttribute('disabled', true);
+
+        const viewports = Array.from(viewportInputs).filter(input =>
             input.checked
         ).map(input => {
             return input.value
         });
-        console.log({ viewports });
         const data = {
-            pages: document.querySelector('textarea').value,
+            pages: urlInput.value,
             viewports,
         }
 
@@ -63,35 +213,93 @@
             },
             body: JSON.stringify(data)
         }).then(response => response.json()).then(result => {
-            const keys = ['url', 'type', 'totalBytes']
-            const fragment = document.createDocumentFragment();
+            button.removeAttribute('disabled');
 
-            const createTd = (value = '', attributes = {}) => {
-                let td = document.createElement('td');
-                td.textContent = value;
-                Object.entries(attributes).forEach(([key, value]) => {
-                    td.setAttribute(key, value);
+            const keys = [
+                { id: 'url', title: 'URL', width: 'auto' },
+                { id: 'type', title: 'Type', width: '45px' },
+                { id: 'totalBytes', title: "Total bytes", width: '80px', },
+                { id: 'unusedBytesTotal', title: "Unused bytes", width: '120px', },
+                { id: 'bars', title: "", width: '200px' },
+            ];
+
+            createHeader = (keys) => {
+                let tr = createElement('tr');
+                keys.forEach(key => {
+                    const th = createElement('th');
+                    th.style.width = key.width;
+                    th.textContent = key.title;
+                    tr.appendChild(th)
                 });
+                return tr;
+            }
+
+            const createCell = (id, item) => {
+                let td = createElement('td', id);
+                switch (id) {
+                    case 'unusedBytesTotal':
+                        const span = createElement('span');
+                        span.textContent = item.unusedBytesTotal;
+                        const unusedPercentsSpan = createElement('span', 'percent-value');
+                        unusedPercentsSpan.textContent = ' ( ' + item.unusedPercent + '% )';
+                        td.appendChild(span);
+                        td.appendChild(unusedPercentsSpan);
+
+                        break;
+
+                    case 'bars':
+                        const barContainer = createElement('div', 'bar-container');
+
+                        const unusedSizeBar = createElement('div', ['bar', 'bar-unused-size']);
+                        unusedSizeBar.style.width = item.unusedPercent + '%';
+
+                        const usedSizeBar = createElement('div', ['bar', 'bar-used-size'])
+                        usedSizeBar.style.width = (100 - item.unusedPercent) + '%';
+                        barContainer.appendChild(unusedSizeBar);
+                        barContainer.appendChild(usedSizeBar);
+                        td.appendChild(barContainer);
+                        break;
+
+                    default:
+                        td.textContent = item[id];
+                        break;
+                }
+
                 return td;
             }
 
-            result.forEach(function (item) {
-                let tr = document.createElement('tr');
+            const fragment = document.createDocumentFragment();
+
+            fragment.appendChild(createHeader(keys));
+
+            result.forEach((item) => {
+                let tr = createElement('tr');
                 keys.forEach(key => {
-                    tr.appendChild(createTd(item[key], { 'class': key }))
+                    tr.appendChild(createCell(key.id, item))
                 });
-                tr.appendChild(createTd(`${item.unusedBytesTotal} ( ${item.unusedPercent}% )`))
                 fragment.appendChild(tr);
             });
-            const resultEl = document.querySelector('.result');
+
+
+            //remove old content
+            while (resultEl.firstChild) {
+                resultEl.removeChild(resultEl.firstChild);
+            }
             resultEl.appendChild(fragment);
-
-
         }).catch(e => {
+            console.log('error', e);
         })
 
     })
 
+    function createElement(tag = 'div', classNames = []) {
+        const el = document.createElement(tag);
+        if (!Array.isArray(classNames)) {
+            classNames = [classNames];
+        }
+        el.classList.add(...classNames);
+        return el;
+    }
 </script>
 
 </html>

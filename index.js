@@ -4,8 +4,10 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const prettyBytes = require("pretty-bytes");
+
 const helpers = require("./helpers");
-const { format, getViewport } = helpers;
+const { format, getViewport, mergeRanges } = helpers;
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true, limit: "1mb" }));
@@ -17,6 +19,7 @@ const defaultViewport = [1280, 960];
 
 app.post("/api", async (req, res) => {
   const viewports = req.body.viewports.map(getViewport) || [defaultViewport];
+
   const pages = req.body.pages.split("\n");
 
   const browser = await puppeteer.launch();
@@ -31,11 +34,15 @@ app.post("/api", async (req, res) => {
   ]);
 
   // Navigate to pages
-  for (let viewport of viewports) {
-    const { width, height } = viewport;
-    for (let url of pages) {
+
+  for (let url of pages) {
+    const [firstVP, ...restVP] = viewports;
+    const { width, height } = firstVP;
+    await page.setViewport({ width, height });
+    await page.goto(url);
+    for (let viewport of restVP) {
+      const { width, height } = viewport;
       await page.setViewport({ width, height });
-      await page.goto(url);
     }
   }
 
@@ -48,10 +55,14 @@ app.post("/api", async (req, res) => {
   const formatCSS = format("css");
   const formatJS = format("JS");
 
-  const coverage = [
-    ...jsCoverage.map(formatJS),
-    ...cssCoverage.map(formatCSS)
-  ].sort((a, b) => b.unusedPercent - b.unusedPercent);
+  const coverage = [...jsCoverage.map(formatJS), ...cssCoverage.map(formatCSS)]
+    .sort((a, b) => b.unusedBytesTotal - a.unusedBytesTotal)
+    .map(item => ({
+      ...item,
+      totalBytes: prettyBytes(item.totalBytes),
+      usedBytesTotal: prettyBytes(item.usedBytesTotal),
+      unusedBytesTotal: prettyBytes(item.unusedBytesTotal)
+    }));
 
   res.json(coverage);
   await browser.close();
