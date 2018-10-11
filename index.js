@@ -66,16 +66,36 @@ app.post("/api", async (req, res) => {
     const coverage = [
       ...jsCoverage.map(formatJS),
       ...cssCoverage.map(formatCSS)
-    ]
-      .sort((a, b) => b.unusedBytesTotal - a.unusedBytesTotal)
-      .map(item => ({
-        ...item,
-        totalBytes: prettyBytes(item.totalBytes),
-        usedBytesTotal: prettyBytes(item.usedBytesTotal),
-        unusedBytesTotal: prettyBytes(item.unusedBytesTotal)
-      }));
+    ].sort((a, b) => b.unusedBytesTotal - a.unusedBytesTotal);
 
-    res.json(coverage);
+    // some stupide dublicate code for calculating total wasted bites
+    const total = coverage.reduce(
+      (prev, curr) => {
+        prev.totalBytes += curr.totalBytes;
+        prev.usedBytesTotal += curr.usedBytesTotal;
+        prev.unusedBytesTotal += curr.unusedBytesTotal;
+        prev.unusedPercent = prev.totalBytes
+          ? (prev.unusedBytesTotal * 100) / prev.totalBytes
+          : 0;
+        prev.usedPercent = 100 - prev.unusedPercent;
+
+        return prev;
+      },
+      { totalBytes: 0, usedBytesTotal: 0, unusedBytesTotal: 0, url: "TOTAL" }
+    );
+
+    coverage.push(total);
+
+    const formatFn = item => ({
+      ...item,
+      totalBytes: prettyBytes(item.totalBytes),
+      usedBytesTotal: prettyBytes(item.usedBytesTotal),
+      unusedBytesTotal: prettyBytes(item.unusedBytesTotal)
+    });
+
+    const formated = coverage.map(formatFn);
+
+    res.json(formated);
     await browser.close();
   } catch (e) {
     res.status(400);
