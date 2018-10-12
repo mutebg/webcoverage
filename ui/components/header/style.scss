@@ -1,0 +1,30 @@
+.header {
+  height: 56px;
+  background: var(--primary);
+  color: #fff;
+  padding: 0 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+
+  .icon {
+    color: #fff;
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .icon--twitter svg {
+    width: 40px;
+    height: 42px;
+  }
+  .icon--github svg {
+    width: 30px;
+    height: 30px;
+  }
+}

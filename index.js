@@ -21,10 +21,14 @@ app.post("/api", async (req, res) => {
   try {
     // collect and validate input data
     const viewports = req.body.viewports.map(getViewport) || [defaultViewport];
+
     const pages = req.body.pages
       .split("\n")
       .filter(Boolean)
       .filter(isUrlHttp);
+
+    console.log(pages, viewports);
+
     if (pages.length === 0 || viewports.length === 0) {
       throw { message: "No URL or viewport" };
     }
@@ -75,7 +79,7 @@ app.post("/api", async (req, res) => {
         prev.usedBytesTotal += curr.usedBytesTotal;
         prev.unusedBytesTotal += curr.unusedBytesTotal;
         prev.unusedPercent = prev.totalBytes
-          ? (prev.unusedBytesTotal * 100) / prev.totalBytes
+          ? prev.unusedBytesTotal * 100 / prev.totalBytes
           : 0;
         prev.usedPercent = 100 - prev.unusedPercent;
 

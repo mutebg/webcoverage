@@ -1,0 +1,39 @@
+.intro {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.intro h1 {
+  font-size: 3em;
+  color: var(--primary);
+  text-shadow: 1px 1px 0px #ccc;
+}
+
+.intro textarea {
+  width: 100%;
+  padding: 1em;
+  font-size: 16px;
+  height: 6.8em;
+  line-height: 1.4;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+.viewports {
+  margin: 0 0 1em 0;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 3px;
+
+  div {
+    display: inline-block;
+    margin: 0 0.5em;
+  }
+
+  input {
+    margin-right: 5px;
+  }
+}
