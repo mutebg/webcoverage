@@ -1,0 +1,66 @@
+.data-grid {
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  width: calc(100% - 2em);
+  margin: 2em 1em 1em 1em;
+  table-layout: fixed;
+  border-spacing: 0;
+  border-collapse: separate;
+  height: 100%;
+  font-size: 14px;
+}
+
+.data-grid:empty {
+  display: none;
+}
+
+.data-grid td,
+.data-grid th {
+  border-bottom: 1px solid #fff;
+  border-right: 1px solid #fff;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 18px;
+  height: 18px;
+  padding: 1px 4px;
+}
+
+.data-grid th {
+  background: var(--primary);
+  color: #fff;
+}
+
+.data-grid td.totalBytes,
+.data-grid td.unusedBytesTotal {
+  text-align: right;
+}
+
+.data-grid td.url {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-grid td .bar {
+  display: inline-block;
+  height: 8px;
+}
+
+.data-grid td .bar-container {
+}
+
+.data-grid td .bar-unused-size {
+  background-color: var(--fail-color);
+  border-radius: 3px 0 0 3px;
+}
+
+.data-grid td .bar-used-size {
+  background-color: var(--pass-color);
+  border-radius: 0 3px 3px 0;
+}
+
+.data-grid td .percent-value {
+  color: #888;
+  width: 60px;
+  display: inline-block;
+}
