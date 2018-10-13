@@ -19,7 +19,6 @@ export default class App extends Component {
 
   componentDidMount() {
     const params = queryString.parse(location.search);
-    console.log({ params });
 
     if (params.pages) {
       post("/", params).then(data => {

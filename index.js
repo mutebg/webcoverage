@@ -12,7 +12,8 @@ const { format, getViewport, mergeRanges } = helpers;
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true, limit: "1mb" }));
 app.use(bodyParser.json({ limit: "1mb" }));
-const staticPath = path.join(__dirname, "./static");
+//const staticPath = path.join(__dirname, "./static");
+const staticPath = path.join(__dirname, "./build");
 app.use(express.static(staticPath));
 
 const defaultViewport = [1280, 960];
@@ -26,8 +27,6 @@ app.post("/api", async (req, res) => {
       .split("\n")
       .filter(Boolean)
       .filter(isUrlHttp);
-
-    console.log(pages, viewports);
 
     if (pages.length === 0 || viewports.length === 0) {
       throw { message: "No URL or viewport" };
@@ -108,7 +107,9 @@ app.post("/api", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.sendFile("index.html");
+  res.sendFile("index.html", {
+    root: path.join(__dirname + "/build/")
+  });
 });
 
 const port = process.env.NODE_PORT || 3000;
