@@ -4,10 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "preact build --no-prerender --template ui/assets/template.html --src=ui | node index.js",
-    "dev": "preact watch --template ui/assets/template.html --src=ui | nodemon index.js",
-    "ui:start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
-    "ui:build": "preact build --no-prerender --template ui/assets/template.html --src=ui",
+    "start":
+      "preact build --no-prerender --template ui/assets/template.html --src=ui | node index.js",
+    "dev":
+      "preact watch --template ui/assets/template.html --src=ui | npx nodemon index.js",
+    "ui:start":
+      "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
+    "ui:build":
+      "preact build --no-prerender --template ui/assets/template.html --src=ui",
     "ui:dev": "preact watch --template ui/assets/template.html --src=ui"
   },
   "author": "",
