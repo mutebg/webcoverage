@@ -46,3 +46,17 @@ button {
   max-width: 1400px;
   margin: 0 auto;
 }
+
+.banner {
+  padding: 1em;
+  text-align: center;
+  border: 1px solid currentColor;
+
+  &--loading {
+    color: var(--primary-dark);
+  }
+
+  &--error {
+    color: var(--fail-color);
+  }
+}

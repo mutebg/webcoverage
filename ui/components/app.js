@@ -14,29 +14,58 @@ if (module.hot) {
 export default class App extends Component {
   state = {
     data: [],
-    params: {}
+    params: {},
+    isLoading: false,
+    error: null
+  };
+
+  loadData = params => {
+    this.setState({
+      isLoading: true,
+      error: null
+    });
+    post("/", params)
+      .then(data => {
+        this.setState({
+          data,
+          params,
+          isLoading: false
+        });
+      })
+      .catch(e => {
+        console.log({ e });
+        this.setState({
+          isLoading: false,
+          error: e.message
+        });
+      });
   };
 
   componentDidMount() {
     const params = queryString.parse(location.search);
 
-    if (params.pages) {
-      post("/", params).then(data => {
-        this.setState({
-          data,
-          params
-        });
-      });
+    if (params.pages && params.viewports.length) {
+      this.loadData(params);
     }
   }
 
-  render(_, { data, params }) {
+  handleSubmit = params => {
+    this.loadData(params);
+  };
+
+  render(_, { data, params, isLoading, error }) {
     return (
       <div id="app">
         <Header />
         <main class="main container">
-          <Form params={params} />
-          <Table rows={data} />
+          <Form params={params} onSubmit={this.handleSubmit} />
+
+          {error && <p class="banner banner--error">Error: {error}</p>}
+          {isLoading ? (
+            <p class="banner banner--loading">Loading data</p>
+          ) : (
+            <Table rows={data} />
+          )}
         </main>
         <Footer />
       </div>

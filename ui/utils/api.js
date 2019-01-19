@@ -20,7 +20,27 @@ const apiFetch = (url, method = "get", data = {}) => {
     };
     options.body = JSON.stringify(data);
   }
-  return fetch(url, options).then(response => response.json());
+
+  return fetch(url, options).then(response => {
+    const contentType = response.headers.get("content-type") || false;
+    const type =
+      contentType && contentType.indexOf("json") >= 0 ? "json" : "text";
+
+    if (!response.ok) {
+      return response[type]().then(err => Promise.reject(err));
+    }
+
+    return response[type]();
+  });
+
+  // return fetch(url, options).then(response => {
+  //   if ( response.ok ) {
+  //     return response.json()
+  //   } else {
+  //     return Promise.reject(response.json())
+  //   }
+
+  // }
 };
 
 // ajax get method
