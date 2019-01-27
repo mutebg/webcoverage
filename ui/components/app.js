@@ -44,6 +44,12 @@ export default class App extends Component {
   componentDidMount() {
     const params = queryString.parse(location.search);
 
+    // prefill input fields
+    this.setState({
+      params
+    });
+
+    // load data
     if (params.pages && params.viewports.length) {
       this.loadData(params);
     }
@@ -51,6 +57,10 @@ export default class App extends Component {
 
   handleSubmit = params => {
     this.loadData(params);
+
+    const stringifyUrl = queryString.stringify(params);
+    window.history.pushState(null,'', '/?' + stringifyUrl);
+    
   };
 
   render(_, { data, params, isLoading, error }) {
