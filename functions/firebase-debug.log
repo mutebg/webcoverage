@@ -1,0 +1,28 @@
+[debug] [2019-07-30T15:26:33.474Z] ----------------------------------------------------------------------
+[debug] [2019-07-30T15:26:33.476Z] Command:       /Users/stoyan/.nvm/versions/node/v9.11.2/bin/node /Users/stoyan/.nvm/versions/node/v9.11.2/bin/firebase serve --only functions
+[debug] [2019-07-30T15:26:33.476Z] CLI Version:   6.3.1
+[debug] [2019-07-30T15:26:33.476Z] Platform:      darwin
+[debug] [2019-07-30T15:26:33.476Z] Node Version:  v9.11.2
+[debug] [2019-07-30T15:26:33.476Z] Time:          Tue Jul 30 2019 18:26:33 GMT+0300 (EEST)
+[debug] [2019-07-30T15:26:33.476Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-07-30T15:26:33.485Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-07-30T15:26:33.485Z] > authorizing via signed-in user
+[debug] [2019-07-30T15:26:33.485Z] [iam] checking project webcoverage-5e40c for permissions ["firebase.projects.get"]
+[debug] [2019-07-30T15:26:33.486Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/webcoverage-5e40c:testIamPermissions  
+
+[debug] [2019-07-30T15:26:34.704Z] <<< HTTP RESPONSE 200
+[debug] [2019-07-30T15:26:34.706Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/webcoverage-5e40c  
+ 
+[debug] [2019-07-30T15:26:35.774Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/Users/stoyan/projects/pupy-coverage'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2019-07-30T15:26:36.164Z] Fetching environment
+[debug] [2019-07-30T15:26:36.167Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/273166568781:getServerAppConfig  
+ 
+[debug] [2019-07-30T15:26:36.523Z] <<< HTTP RESPONSE 200
+[debug] [2019-07-30T15:26:36.524Z] Starting @google-cloud/functions-emulator
+[debug] [2019-07-30T15:26:37.563Z] Parsing function triggers
+[info] ✔  functions: api: http://localhost:5000/webcoverage-5e40c/us-central1/api
