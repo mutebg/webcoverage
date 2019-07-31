@@ -50,7 +50,7 @@ export default class App extends Component {
     });
 
     // load data
-    if (params.pages && params.viewports.length) {
+    if (params.pages && params.viewports && params.viewports.length) {
       this.loadData(params);
     }
   }
@@ -59,8 +59,7 @@ export default class App extends Component {
     this.loadData(params);
 
     const stringifyUrl = queryString.stringify(params);
-    window.history.pushState(null,'', '/?' + stringifyUrl);
-    
+    window.history.pushState(null, "", "/?" + stringifyUrl);
   };
 
   render(_, { data, params, isLoading, error }) {

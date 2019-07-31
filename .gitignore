@@ -6,3 +6,4 @@ reports
 data
 elm-stuff
 build
+.firebase/*
