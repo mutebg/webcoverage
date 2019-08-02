@@ -67,7 +67,11 @@ export default class App extends Component {
       <div id="app">
         <Header />
         <main class="main container">
-          <Form params={params} onSubmit={this.handleSubmit} />
+          <Form
+            params={params}
+            onSubmit={this.handleSubmit}
+            isLoading={isLoading}
+          />
 
           {error && <p class="banner banner--error">Error: {error}</p>}
           {isLoading ? (

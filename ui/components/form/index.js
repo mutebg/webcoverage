@@ -22,10 +22,10 @@ class Form extends Component {
     }
   };
 
-  render({ params = {} }) {
+  render({ params = {}, isLoading = false }) {
     const { viewports = viewportsValues, pages = "" } = params;
     return (
-      <div class="intro">
+      <div class={`intro ${isLoading ? "intro--is-loading" : ""}`}>
         <h1>WebCoverage.app</h1>
         <p>Find the amount of unused CSS & JSS on your page</p>
         <form onSubmit={this.handleOnSubmit}>
@@ -39,16 +39,17 @@ class Form extends Component {
                   id={`vp_${vp}`}
                   value={vp}
                   checked={viewports.includes(vp)}
+                  disabled={isLoading}
                 />
                 <label for={`vp_${vp}`}>{vp}</label>
               </div>
             ))}
           </fieldset>
-          <label>Enter URLs</label>
-          <textarea name="pages" placeholder="Each URL on new line">
-            {pages}
-          </textarea>
-          <button class="btn">Send</button>
+          <label>Enter URL</label>
+          <input type="url" name="pages" placeholder="" disabled={isLoading} />
+          <button class="btn" disabled={isLoading}>
+            Check
+          </button>
         </form>
       </div>
     );
