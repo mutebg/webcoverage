@@ -46,9 +46,15 @@ class Form extends Component {
             ))}
           </fieldset>
           <label>Enter URL</label>
-          <input type="url" name="pages" placeholder="" disabled={isLoading} />
-          <button class="btn" disabled={isLoading}>
-            Check
+          <input
+            type="url"
+            name="pages"
+            placeholder=""
+            disabled={isLoading}
+            value={pages}
+          />
+          <button class={`btn ${isLoading && "btn--danger"}`}>
+            {isLoading ? `Cancel` : `Check`}
           </button>
         </form>
       </div>

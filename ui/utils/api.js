@@ -9,19 +9,20 @@ const toQueryString = obj =>
     "&"
   );
 
-const apiFetch = (url, method = "get", data = {}) => {
-  const options = {
-    method
+const apiFetch = (url, method = "get", data = {}, options = {}) => {
+  const fetchOptions = {
+    method,
+    ...options
   };
   if (data) {
-    options.headers = {
+    fetchOptions.headers = {
       Accept: "application/json",
       "Content-Type": "application/json"
     };
-    options.body = JSON.stringify(data);
+    fetchOptions.body = JSON.stringify(data);
   }
 
-  return fetch(url, options).then(response => {
+  return fetch(url, fetchOptions).then(response => {
     const contentType = response.headers.get("content-type") || false;
     const type =
       contentType && contentType.indexOf("json") >= 0 ? "json" : "text";
@@ -32,20 +33,16 @@ const apiFetch = (url, method = "get", data = {}) => {
 
     return response[type]();
   });
-
-  // return fetch(url, options).then(response => {
-  //   if ( response.ok ) {
-  //     return response.json()
-  //   } else {
-  //     return Promise.reject(response.json())
-  //   }
-
-  // }
 };
 
 // ajax get method
-export const get = path => apiFetch(config.API_URL + path, "GET", null);
+export const get = ({ path, options }) =>
+  apiFetch(config.API_URL + path, "GET", null, options);
 
 // ajax post method
-export const post = (path, data) =>
-  apiFetch(config.API_URL + path, "POST", data);
+export const post = ({ path, data, options }) =>
+  apiFetch(config.API_URL + path, "POST", data, options);
+
+export const createAbortController = () => {
+  return new AbortController();
+};

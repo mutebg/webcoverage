@@ -5,7 +5,7 @@ import Header from "./header";
 import Footer from "./footer";
 import Form from "./form";
 import Table from "./table";
-import { post } from "../utils/api";
+import { post, createAbortController } from "../utils/api";
 
 if (module.hot) {
   require("preact/debug");
@@ -19,12 +19,20 @@ export default class App extends Component {
     error: null
   };
 
+  abortController = null;
+
   loadData = params => {
+    this.abortController = createAbortController();
     this.setState({
       isLoading: true,
       error: null
     });
-    post("/", params)
+
+    post({
+      path: "/",
+      data: params,
+      options: { signal: this.abortController.signal }
+    })
       .then(data => {
         this.setState({
           data,
@@ -33,7 +41,6 @@ export default class App extends Component {
         });
       })
       .catch(e => {
-        console.log({ e });
         this.setState({
           isLoading: false,
           error: e.message
@@ -56,10 +63,15 @@ export default class App extends Component {
   }
 
   handleSubmit = params => {
-    this.loadData(params);
+    if (!this.state.isLoading) {
+      this.loadData(params);
+      const stringifyUrl = queryString.stringify(params);
+      window.history.pushState(null, "", "/?" + stringifyUrl);
 
-    const stringifyUrl = queryString.stringify(params);
-    window.history.pushState(null, "", "/?" + stringifyUrl);
+      // stop loading and abort the request
+    } else if (this.state.isLoading && this.abortController) {
+      this.abortController.abort();
+    }
   };
 
   render(_, { data, params, isLoading, error }) {

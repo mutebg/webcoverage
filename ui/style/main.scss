@@ -35,6 +35,10 @@ button {
   color: #fff;
   border: 2px solid #fff;
   font-size: 1.2em;
+
+  &--danger {
+    background: var(--fail-color);
+  }
 }
 
 .main {
