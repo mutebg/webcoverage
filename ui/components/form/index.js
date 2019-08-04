@@ -26,11 +26,10 @@ class Form extends Component {
     const { viewports = viewportsValues, pages = "" } = params;
     return (
       <div class={`intro ${isLoading ? "intro--is-loading" : ""}`}>
-        <h1>WebCoverage.app</h1>
-        <p>Find the amount of unused CSS & JSS on your page</p>
+        <p>Find the amount of unused CSS & JSS in your page</p>
         <form onSubmit={this.handleOnSubmit}>
           <fieldset class="viewports">
-            <legend>Select viewport:</legend>
+            <legend>Select viewports:</legend>
             {viewportsValues.map(vp => (
               <div>
                 <input
