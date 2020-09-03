@@ -18,7 +18,7 @@
     "is-url-http": "^1.0.1",
     "preact": "^8.2.6",
     "pretty-bytes": "^5.1.0",
-    "puppeteer": "^1.9.0",
+    "puppeteer": "^1.13.0",
     "query-string": "^6.2.0"
   },
   "devDependencies": {
